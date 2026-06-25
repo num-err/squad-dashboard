@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model LeetcodeLog {
+  id         Int    @id @default(autoincrement())
+  member     String
+  problem    String
+  loggedDate String @map("logged_date")
+  loggedAt   String @map("logged_at")
+
+  @@map("leetcode_logs")
+}
+
+model StandupLog {
+  id       Int     @id @default(autoincrement())
+  member   String
+  logDate  String  @map("log_date")
+  message  String?
+  loggedAt String  @map("logged_at")
+
+  @@map("standup_logs")
+}
+
+model LinkedinPost {
+  id         Int     @id @default(autoincrement())
+  member     String
+  postUrl    String? @map("post_url")
+  theme      String?
+  postedDate String  @map("posted_date")
+  loggedAt   String  @map("logged_at")
+
+  @@map("linkedin_posts")
+}
+
+model SprintGoal {
+  id          Int     @id @default(autoincrement())
+  member      String
+  goalText    String  @map("goal_text")
+  track       String
+  sprintStart String  @map("sprint_start")
+  sprintEnd   String  @map("sprint_end")
+  completed   Boolean @default(false)
+  completedAt String? @map("completed_at")
+
+  @@map("sprint_goals")
+}
+
+model Application {
+  id          Int     @id @default(autoincrement())
+  member      String
+  type        String
+  name        String
+  status      String
+  appliedDate String  @map("applied_date")
+  notes       String?
+  updatedAt   String  @map("updated_at")
+
+  @@map("applications")
+}

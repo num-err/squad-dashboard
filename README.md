@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Squad OS — Accountability Dashboard
 
-## Getting Started
+A dashboard for a small job-search squad that keeps each other accountable. It tracks LeetCode practice, daily standups, LinkedIn posts, two-week sprint goals, and job/internship applications for each member, and uses Claude to write a weekly recap.
 
-First, run the development server:
+The data model mirrors the tables of a companion WhatsApp bot that members log activity through, so the dashboard can read the same records.
+
+**Stack:** Next.js 16 · React · TypeScript · Tailwind CSS 4 · Prisma · SQLite · Recharts · Radix UI · Anthropic API (Claude Haiku)
+
+---
+
+## Features
+
+- **Squad overview** — a card per member with streaks, problems solved, posts, and goal progress
+- **Activity heatmap** — daily consistency at a glance
+- **Sprint manager** — set, complete, and review goals per two-week sprint
+- **Applications log** — track where each member applied and the status of each application
+- **Member deep-dive** — one person's full history on a dedicated page
+- **History charts** — trends over time with Recharts
+- **AI weekly recap** — Claude Haiku summarizes the squad's week in plain English
+
+## Pages
+
+| Route | What it shows |
+|---|---|
+| `/` | Squad overview, heatmap, weekly AI recap |
+| `/member/[name]` | One member's stats, goals, and applications |
+| `/sprint` | Current sprint goals for everyone |
+| `/history` | Charts of activity over time |
+
+## API
+
+| Route | Methods | Purpose |
+|---|---|---|
+| `/api/members` | GET | Aggregated stats for every member |
+| `/api/leetcode` | GET, POST | LeetCode problem logs |
+| `/api/linkedin` | GET, POST | LinkedIn post logs |
+| `/api/goals` | GET, POST, PUT, DELETE | Sprint goals |
+| `/api/applications` | GET, POST, PUT | Job/internship applications |
+| `/api/summary` | GET | AI-generated weekly recap |
+
+## Data model
+
+Prisma models (SQLite): `LeetcodeLog`, `StandupLog`, `LinkedinPost`, `SprintGoal`, `Application`. See `prisma/schema.prisma`.
+
+## Running locally
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/num-err/squad-dashboard.git
+cd squad-dashboard
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Create `.env.local`:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+DATABASE_URL="file:./prisma/squad.db"
+ANTHROPIC_API_KEY=...
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Set up the database with sample data, then start the app:
 
-## Learn More
+```bash
+npx prisma migrate dev
+npx prisma db seed
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Open `http://localhost:3000`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Project layout
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+app/                 pages and API routes (App Router)
+src/components/      dashboard components (MemberCard, ActivityHeatmap, SprintGoals, ...)
+src/lib/             Prisma client, Anthropic client, date helpers
+src/types/           shared types and squad config
+prisma/              schema, migrations, seed script
+```
